@@ -1,15 +1,15 @@
 body {
   font-family: 'Arial', sans-serif;
   margin: 0;
-  background-color: #f9fafb;
-  color: #222;
+  background-color: #f5f5f5;
+  color: #111;
 }
 
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #4ade80;
+  background: #333;
   padding: 14px 40px;
   color: white;
 }
@@ -20,8 +20,8 @@ body {
 }
 
 .nav-btn {
-  background: white;
-  color: #4ade80;
+  background: #1d4ed8;
+  color: #fff;
   padding: 8px 16px;
   border-radius: 6px;
   text-decoration: none;
@@ -30,7 +30,7 @@ body {
 }
 
 .nav-btn:hover {
-  background: #f1f1f1;
+  background: #e0e0e0;
 }
 
 .main-section {
@@ -39,8 +39,8 @@ body {
   align-items: center;
   text-align: center;
   height: 90vh;
-  background: linear-gradient(135deg, #5b7fff, #4ade80);
-  color: white;
+  background: #d1d0d0;
+  color: #111;
   padding: 0 20px;
 }
 
@@ -71,22 +71,22 @@ body {
 }
 
 .btn-primary {
-  background-color: white;
-  color: #4ade80;
+  background-color: #1d4ed8; 
+  color: #fff;
 }
 
 .btn-primary:hover {
-  background-color: #f1f1f1;
+  background-color: #2563eb;
 }
 
 .btn-secondary {
-  background: transparent;
-  border: 2px solid white;
-  color: white;
+  background: #fff;
+  border: 2px solid #1d4ed8;
+  color: #333;
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255);
+  background: #e0e7ff;
 }
 
 footer {
@@ -113,7 +113,7 @@ footer {
 
 .form-group label {
   font-weight: 600;
-  color: #222;
+  color: #111;
   width: 80px;
   text-align: right;
 }
@@ -126,23 +126,22 @@ footer {
 }
 
 .form-group input:focus {
-  border-color: #4ade80;
+  border-color: #555;
   outline: none;
 }
 
 .login-form .nav-btn {
-  background-color: #4ade80;
+  background-color: #1d4ed8;
   color: white;
   border: none;
   padding: 10px;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
-  transition: 0.2s ease;
 }
 
 .login-form .nav-btn:hover {
-  background-color: #22c55e;
+    background-color: #2563eb;
 }
 
 .login-form p {
