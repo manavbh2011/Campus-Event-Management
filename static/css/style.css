@@ -66,7 +66,6 @@ body {
   font-weight: 600;
   padding: 12px 24px;
   border-radius: 8px;
-  transition: 0.3s ease;
   margin: 0 10px;
 }
 
@@ -136,7 +135,6 @@ footer {
   border: none;
   padding: 10px;
   border-radius: 6px;
-  cursor: pointer;
   font-weight: 600;
 }
 
