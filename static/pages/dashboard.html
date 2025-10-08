@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Campus Event System</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">EventConnect</div>
+    <nav>
+      <a href="dashboard.html" class="nav-btn">Dashboard</a>
+      <a href="search.html" class="nav-btn">Find Events</a>
+      <a href="#" class="nav-btn">Profile</a>
+      <a href="login.html" class="nav-btn">Logout</a>
+    </nav>
+  </header>
+
+  <main class="main-section dashboard-main">
+    <div class="main-content dashboard-content">
+      <div class="welcome-section">
+        <h1>Welcome back, User!</h1>
+        <p>Here's what's happening with your events today.</p>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card upcoming">
+          <div class="stat-icon">📅</div>
+          <div class="stat-number">5</div>
+          <div class="stat-label">Upcoming Events</div>
+        </div>
+        <div class="stat-card scheduled">
+          <div class="stat-icon">📋</div>
+          <div class="stat-number">12</div>
+          <div class="stat-label">Scheduled Events</div>
+        </div>
+        <div class="stat-card reminders">
+          <div class="stat-icon">🔔</div>
+          <div class="stat-number">3</div>
+          <div class="stat-label">Reminders</div>
+        </div>
+        <div class="stat-card new">
+          <div class="stat-icon">✨</div>
+          <div class="stat-number">8</div>
+          <div class="stat-label">New Events</div>
+        </div>
+      </div>
+
+      <!-- Upcoming Events Section -->
+      <div class="events-section">
+        <h2>Upcoming Events</h2>
+        <div class="event-list">
+          <div class="event-item">
+            <div class="event-date">
+              <div class="date-day">NOV</div>
+              <div class="date-num">15</div>
+            </div>
+            <div class="event-details">
+              <h3>Tech Conference 2023</h3>
+              <p class="event-location">University of Virginia</p>
+            </div>
+            <div class="event-actions">
+              <button class="btn-action">View Details</button>
+            </div>
+          </div>
+
+          <div class="event-item">
+            <div class="event-date">
+              <div class="date-day">NOV</div>
+              <div class="date-num">18</div>
+            </div>
+            <div class="event-details">
+              <h3>Networking Mixer</h3>
+              <p class="event-location">Oct 15, 2023 at 6:00 PM</p>
+            </div>
+            <div class="event-actions">
+              <button class="btn-action">View Details</button>
+            </div>
+          </div>
+
+          <div class="event-item">
+            <div class="event-date">
+              <div class="date-day">NOV</div>
+              <div class="date-num">22</div>
+            </div>
+            <div class="event-details">
+              <h3>Startup Pitch Night</h3>
+              <p class="event-location">Oct 22, 2023 at 7:00 PM</p>
+            </div>
+            <div class="event-actions">
+              <button class="btn-action">View Details</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- My RSVP'd Events Section -->
+      <div class="events-section">
+        <h2>My RSVP'd Events</h2>
+        <div class="rsvp-table">
+          <div class="table-header">
+            <div class="col-event">EVENT</div>
+            <div class="col-date">DATE</div>
+            <div class="col-location">LOCATION</div>
+            <div class="col-status">STATUS</div>
+            <div class="col-action">ACTION</div>
+          </div>
+          
+          <div class="table-row">
+            <div class="col-event">Web Development Workshop</div>
+            <div class="col-date">Oct 12, 2023</div>
+            <div class="col-location">San Francisco, CA</div>
+            <div class="col-status"><span class="status confirmed">Confirmed</span></div>
+            <div class="col-action"><a href="#" class="link-action">View Details</a></div>
+          </div>
+
+          <div class="table-row">
+            <div class="col-event">Data Science Meetup</div>
+            <div class="col-date">Oct 18, 2023</div>
+            <div class="col-location">New York, NY</div>
+            <div class="col-status"><span class="status pending">Pending</span></div>
+            <div class="col-action"><a href="#" class="link-action">View Details</a></div>
+          </div>
+
+          <div class="table-row">
+            <div class="col-event">UI Design Conference</div>
+            <div class="col-date">Nov 5, 2023</div>
+            <div class="col-location">Online</div>
+            <div class="col-status"><span class="status confirmed">Confirmed</span></div>
+            <div class="col-action"><a href="#" class="link-action">View Details</a></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Past Events Section -->
+      <div class="events-section">
+        <h2>Past Events</h2>
+        <div class="past-events-grid">
+          <div class="past-event-card">
+            <div class="event-image-placeholder"></div>
+            <h3>Blockchain Summit</h3>
+            <p class="event-meta">Great networking opportunities and insights from industry experts.</p>
+            <div class="event-footer">
+              <span class="event-type">Technology</span>
+              <a href="#" class="link-action">View Details</a>
+            </div>
+          </div>
+
+          <div class="past-event-card">
+            <div class="event-image-placeholder"></div>
+            <h3>AI & Machine Learning Expo</h3>
+            <p class="event-meta">Excellent showcase of latest AI applications and techniques.</p>
+            <div class="event-footer">
+              <span class="event-type">Conference</span>
+              <a href="#" class="link-action">View Details</a>
+            </div>
+          </div>
+
+          <div class="past-event-card">
+            <div class="event-image-placeholder"></div>
+            <h3>Digital Marketing Workshop</h3>
+            <p class="event-meta">Advanced tools for digital market engagement and ROI optimization.</p>
+            <div class="event-footer">
+              <span class="event-type">Workshop</span>
+              <a href="#" class="link-action">View Details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Campus Event Management System | Programming Languages for Web Applications</p>
+  </footer>
+</body>
+</html>
