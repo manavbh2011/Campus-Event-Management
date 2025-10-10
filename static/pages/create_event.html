@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create New Event | EventFinder</title>
+
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+
+<body>
+  <header class="navbar">
+    <div class="logo">EventFinder</div>
+    <nav>
+      <a href="../../index.html" class="nav-btn">Home</a>
+      <a href="./login.html" class="nav-btn">Login</a>
+      <a href="#" class="nav-btn">Sign Up</a>
+    </nav>
+  </header>
+
+  <main class="page-wrap">
+    <div class="canvas">
+      <div class="card">
+        <h1>Create New Event</h1>
+        <p class="subtitle">Post events for students to discover and join</p>
+
+        <form class="event-form login-form" id="eventForm">
+          <div class="form-group">
+            <label for="title">Event Title</label>
+            <input id="title" name="title" type="text" placeholder="Enter Title" required />
+          </div>
+
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" placeholder="Enter Description" required></textarea>
+          </div>
+
+          <div class="grid-3">
+            <div class="form-group">
+              <label for="date">Event Date</label>
+              <input id="date" name="date" type="date" required />
+            </div>
+            <div class="form-group">
+              <label for="start">Event Start</label>
+              <input id="start" name="start" type="time" required />
+            </div>
+            <div class="form-group">
+              <label for="end">Event End</label>
+              <input id="end" name="end" type="time" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="location">Location</label>
+            <input id="location" name="location" type="text" placeholder="Where is your event happening?" required />
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="category">Category</label>
+              <select id="category" name="category" required>
+                <option disabled selected>Select a category</option>
+                <option>Art, Conference</option>
+                <option>Music</option>
+                <option>Sports</option>
+                <option>Technology</option>
+                <option>Social</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="capacity">Capacity</label>
+              <input id="capacity" name="capacity" type="number" min="1" placeholder="Max attendees" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Event Image</label>
+            <div class="dropzone">
+              <div class="dz-inner">
+                <div style="font-size:40px; line-height:1; opacity:.45;">🖼️</div>
+                <div style="margin:6px 0 2px;">Click to upload or drag and drop</div>
+                <div class="hint">PNG, JPG, or GIF up to 5MB</div>
+              </div>
+              <input type="file" name="image" accept="image/*" />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="organizer">Organizer Name</label>
+              <input id="organizer" name="organizer" type="text" placeholder="Your name" required />
+            </div>
+            <div class="form-group">
+              <label for="contact">Contact Info</label>
+              <input id="contact" name="contact" type="text" placeholder="Email or phone" required />
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="create-btn">Create Event</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <footer>
+      <p>&copy; 2025 EventFinder | Campus Event Management System</p>
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Profile | EventFinder</title>
+
+  <link rel="stylesheet" href="../css/style.css" />
+
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">EventFinder</div>
+    <nav>
+      <a href="../../index.html" class="nav-btn">Home</a>
+      <a href="create_event.html" class="nav-btn">Create Event</a>
+      <a href="login.html" class="nav-btn">Logout</a>
+    </nav>
+  </header>
+
+  <main class="page-wrap">
+    <div class="canvas">
+      <section class="profile-card">
+        <div class="profile-header">
+          <div class="profile-ident">
+            <div class="avatar">👤</div>
+            <div class="name-block">
+              <div class="name">Alex Johnson</div>
+              <div class="meta">Member since: January 2023</div>
+              <span class="badge">Active</span>
+            </div>
+          </div>
+          <a href="#" class="btn-ghost">✏️ Edit Profile</a>
+        </div>
+
+        <h3 class="section-title">Personal Information</h3>
+        <div class="info-grid">
+          <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <input id="fullName" type="text" value="Alex Johnson" readonly />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input id="email" type="text" value="alex.johnson@example.com" readonly />
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <input id="phone" type="text" value="(555) 123-4567" readonly />
+          </div>
+          <div class="form-group">
+            <label for="dob">Date of Birth</label>
+            <input id="dob" type="text" value="June 15, 1990" readonly />
+          </div>
+          <div class="form-group" style="grid-column:1/-1;">
+            <label for="address">Address</label>
+            <input id="address" type="text" value="123 Main Street, New York, NY 10001" readonly />
+          </div>
+        </div>
+
+        <h3 class="section-title">Interests</h3>
+        <p class="hint">Your interests help us recommend relevant events</p>
+        <div class="chips">
+          <span class="chip">Basketball</span>
+          <span class="chip">Hiking</span>
+          <span class="chip">Photography</span>
+          <span class="chip">Italian Cuisine</span>
+          <span class="chip">Jazz Music</span>
+          <span class="chip">Travel</span>
+        </div>
+
+        <h3 class="section-title">Account Management</h3>
+        <div class="actions">
+          <a href="#" class="btn-outline">🔒 Change Password</a>
+          <a href="#" class="btn-outline">📄 Export Data</a>
+          <button class="btn-danger" type="button">🗑️ Delete Account</button>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <p>&copy; 2025 EventFinder | Campus Event Management System</p>
+    </footer>
+  </main>
+</body>
+</html>
