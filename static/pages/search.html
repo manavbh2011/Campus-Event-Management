@@ -12,7 +12,7 @@
     <nav>
       <a href="dashboard.html" class="nav-btn">Dashboard</a>
       <a href="search.html" class="nav-btn">Find Events</a>
-      <a href="#" class="nav-btn">Profile</a>
+      <a href="profile.html" class="nav-btn">Profile</a>
       <a href="login.html" class="nav-btn">Logout</a>
     </nav>
   </header>
@@ -92,7 +92,7 @@
           <div class="filter-group">
             <h4>Distance</h4>
             <div class="distance-slider">
-              <input type="range" min="0" max="100" value="25" class="slider">
+              <input type="range" aria-label="Filter events by distance" min="0" max="100" value="25" class="slider">
               <div class="distance-labels">
                 <span>0 km</span>
                 <span>25 km</span>
@@ -108,7 +108,7 @@
         <div class="search-results">
           <!-- Search Bar -->
           <div class="search-bar-container">
-            <input type="text" class="search-input" placeholder="Search events...">
+            <input type="text" class="search-input" aria-label="search bar" placeholder="Search events...">
             <button class="search-btn">Search</button>
           </div>
 
@@ -117,7 +117,7 @@
             <h2>Events (24 results)</h2>
             <div class="sort-dropdown">
               <label>Sort by:</label>
-              <select>
+              <select aria-label="Sort events">
                 <option>Date</option>
                 <option>Popularity</option>
                 <option>Price</option>
