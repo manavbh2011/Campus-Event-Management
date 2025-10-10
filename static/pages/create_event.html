@@ -74,14 +74,20 @@
           </div>
 
           <div class="form-group">
-            <label>Event Image</label>
+            <label for="imageUpload">Event Image</label>
             <div class="dropzone">
               <div class="dz-inner">
                 <div style="font-size:40px; line-height:1; opacity:.45;">🖼️</div>
                 <div style="margin:6px 0 2px;">Click to upload or drag and drop</div>
-                <div class="hint">PNG, JPG, or GIF up to 5MB</div>
+                <div class="hint" id="imageHint">PNG, JPG, or GIF up to 5MB</div>
               </div>
-              <input type="file" name="image" accept="image/*" />
+              <input
+                id="imageUpload"
+                type="file"
+                name="image"
+                accept="image/*"
+                aria-describedby="imageHint"
+              />
             </div>
           </div>
 
