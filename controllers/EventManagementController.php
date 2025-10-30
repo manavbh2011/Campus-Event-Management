@@ -1,19 +1,20 @@
 <?php
+require_once __DIR__ . '/../config/database.php';
+
 class EventManagementController {
-    private $db;
-    
+    private PDO $db;
+
     public function __construct() {
         $database = new Database();
         $this->db = $database->getConnection();
     }
-    
+
     public function handleRequest($action) {
-        $allowed_actions = ['login', 'register', 'dashboard', 'logout', 'api'];
-        
-        if (!in_array($action, $allowed_actions)) {
+        $allowed = ['login','register','dashboard','logout','api'];
+        if (!in_array($action, $allowed, true)) {
             $action = 'login';
         }
-        
+
         switch ($action) {
             case 'login':
                 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -22,6 +23,7 @@ class EventManagementController {
                     $this->showLoginForm();
                 }
                 break;
+
             case 'register':
                 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $this->handleRegistration();
@@ -29,215 +31,259 @@ class EventManagementController {
                     $this->showRegistrationForm();
                 }
                 break;
+
             case 'dashboard':
                 $this->requireLogin();
                 $this->showDashboard();
                 break;
+
             case 'logout':
                 $this->handleLogout();
                 break;
+
             case 'api':
                 $this->handleApiRequest();
                 break;
+
             default:
                 $this->showLoginForm();
         }
     }
-    
-    private function validateEmail($email) {
-        $pattern = '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
-        return preg_match($pattern, $email);
+
+    private function validateEmail($email): bool {
+        return (bool)preg_match('/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/', (string)$email);
     }
-    
-    private function validatePassword($password) {
-        $pattern = '/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/';
-        return preg_match($pattern, $password);
+
+    private function validatePassword($password): bool {
+        return (bool)preg_match('/^(?=.*[A-Z])(?=.*\d).{8,}$/', (string)$password);
     }
-    
-    private function sanitizeInput($data) {
-        $data = trim($data);
-        $data = stripslashes($data);
-        $data = htmlspecialchars($data);
-        return $data;
+
+    private function sanitizeInput($data): string {
+        return htmlspecialchars(stripslashes(trim((string)$data)), ENT_QUOTES, 'UTF-8');
     }
-    
-    private function generateSessionToken() {
+
+    private function generateSessionToken(): string {
         return bin2hex(random_bytes(32));
     }
-    
-    private function isLoggedIn() {
-        return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
-    }
-    
-    private function requireLogin() {
-        if (!$this->isLoggedIn()) {
-            header('Location: index.php?action=login');
-            exit();
-        }
-    }
-    
-    private function handleLogin() {
-        $errors = [];
-        
-        if (empty($_POST['form_token']) || $_POST['form_token'] !== $_SESSION['login_token']) {
-            $errors[] = "Invalid form submission";
-        }
-        
-        if (empty($_POST['email'])) {
-            $errors[] = "Email is required";
-        } elseif (!$this->validateEmail($_POST['email'])) {
-            $errors[] = "Invalid email format";
-        }
-        
-        if (empty($_POST['password'])) {
-            $errors[] = "Password is required";
-        }
-        
-        if (empty($errors)) {
-            $email = $this->sanitizeInput($_POST['email']);
-            $password = $_POST['password'];
-            
-            $stmt = $this->db->prepare("SELECT * FROM users WHERE email = ?");
-            $stmt->execute([$email]);
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            if ($user && password_verify($password, $user['password'])) {
-                $stmt = $this->db->prepare("UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?");
-                $stmt->execute([$user['id']]);
-                
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_email'] = $user['email'];
-                $_SESSION['user_name'] = $user['first_name'] . ' ' . $user['last_name'];
-                
 
-                
-                header('Location: index.php?action=dashboard');
-                exit();
-            } else {
-                $errors[] = "Invalid email or password";
-            }
-        }
-        
-        $this->showLoginForm($errors);
+    private function isLoggedIn(): bool {
+        return isset($_SESSION['user']) && !empty($_SESSION['user']['id']);
     }
-    
-    private function handleRegistration() {
+
+    private function requireLogin(): void {
+        if (!$this->isLoggedIn()) {
+            header('Location: /Campus-Event-Management/index.php?action=login');
+            exit;
+        }
+    }
+
+    private function handleLogin(): void {
         $errors = [];
-        
-        // Validate form token
-        if (empty($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['register_token']) {
-            $errors[] = "Invalid form submission";
+
+        if (empty($_POST['form_token']) || !hash_equals($_SESSION['login_token'] ?? '', $_POST['form_token'])) {
+            $errors[] = 'Invalid form submission.';
         }
-        
-        $required_fields = ['email', 'password', 'first_name', 'last_name'];
-        
-        foreach ($required_fields as $field) {
-            if (empty($_POST[$field])) {
-                $errors[] = ucfirst(str_replace('_', ' ', $field)) . " is required";
+
+        $email = $this->sanitizeInput($_POST['email'] ?? '');
+        $password = (string)($_POST['password'] ?? '');
+
+        if ($email === '' || !$this->validateEmail($email)) {
+            $errors[] = 'Please enter a valid email.';
+        }
+        if ($password === '') {
+            $errors[] = 'Password is required.';
+        }
+
+        if ($errors) {
+            $this->showLoginForm($errors);
+            return;
+        }
+
+        $stmt = $this->db->prepare('SELECT id, email, password, first_name, last_name FROM users WHERE email = :email');
+        $stmt->execute([':email' => $email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$user || !password_verify($password, $user['password'])) {
+            $this->showLoginForm(['Invalid email or password.']);
+            return;
+        }
+
+        $this->db->prepare('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = :id')
+                 ->execute([':id' => $user['id']]);
+
+        $_SESSION['user'] = [
+            'id'         => (int)$user['id'],
+            'email'      => $user['email'],
+            'first_name' => $user['first_name'],
+            'last_name'  => $user['last_name'],
+        ];
+        $_SESSION['user_id']    = (int)$user['id'];
+        $_SESSION['user_email'] = $user['email'];
+        $_SESSION['user_name']  = trim($user['first_name'].' '.$user['last_name']);
+
+        session_regenerate_id(true);
+        session_write_close();
+        header('Location: /Campus-Event-Management/index.php?action=dashboard');
+        exit;
+    }
+
+    private function handleRegistration(): void {
+        $errors = [];
+
+        if (empty($_POST['csrf_token']) || !hash_equals($_SESSION['register_token'] ?? '', $_POST['csrf_token'])) {
+            $errors[] = 'Invalid form submission.';
+        }
+
+        $email     = $this->sanitizeInput($_POST['email'] ?? '');
+        $password  = (string)($_POST['password'] ?? '');
+        $confirm   = (string)($_POST['confirm_password'] ?? '');
+        $first     = $this->sanitizeInput($_POST['first_name'] ?? '');
+        $last      = $this->sanitizeInput($_POST['last_name'] ?? '');
+
+        if ($first === '' || !preg_match('/^[\p{L}\p{M}\s\'\-\.]{2,}$/u', $first)) { $errors[] = 'First name must be 2+ letters.'; }
+        if ($last  === '' || !preg_match('/^[\p{L}\p{M}\s\'\-\.]{2,}$/u', $last))  { $errors[] = 'Last name must be 2+ letters.'; }
+        if ($email === '' || !$this->validateEmail($email)) { $errors[] = 'Please enter a valid email.'; }
+        if (!$this->validatePassword($password)) { $errors[] = 'Password must be 8+ chars with at least 1 uppercase and 1 number.'; }
+        if ($password !== $confirm) { $errors[] = 'Passwords do not match.'; }
+
+        if ($errors) {
+            $this->showRegistrationForm($errors);
+            return;
+        }
+
+        $exists = $this->db->prepare('SELECT 1 FROM users WHERE email = :email');
+        $exists->execute([':email' => $email]);
+        if ($exists->fetchColumn()) {
+            $this->showRegistrationForm(['An account with that email already exists.']);
+            return;
+        }
+
+        $stmt = $this->db->prepare('
+            INSERT INTO users (email, password, first_name, last_name)
+            VALUES (:e, :p, :f, :l)
+            RETURNING id
+        ');
+        $stmt->execute([
+            ':e' => $email,
+            ':p' => password_hash($password, PASSWORD_DEFAULT),
+            ':f' => $first,
+            ':l' => $last
+        ]);
+        $newId = (int)$stmt->fetchColumn();
+
+        $_SESSION['user'] = [
+            'id'         => $newId,
+            'email'      => $email,
+            'first_name' => $first,
+            'last_name'  => $last,
+        ];
+        $_SESSION['user_id']    = $newId;
+        $_SESSION['user_email'] = $email;
+        $_SESSION['user_name']  = trim($first.' '.$last);
+
+        session_regenerate_id(true);
+        session_write_close();
+        header('Location: /Campus-Event-Management/profile.php');
+        exit;
+    }
+
+    private function showLoginForm(array $errors = []): void {
+        if (empty($_SESSION['login_token'])) {
+            $_SESSION['login_token'] = $this->generateSessionToken();
+        }
+        $view_errors  = $errors;
+        $view_message = isset($_GET['registered']) ? 'Registration successful! Please log in.' : '';
+        include __DIR__ . '/../views/login.php';
+    }
+
+    private function showRegistrationForm(array $errors = []): void {
+        if (empty($_SESSION['register_token'])) {
+            $_SESSION['register_token'] = $this->generateSessionToken();
+        }
+        $view_errors = $errors;
+        include __DIR__ . '/../views/register.php';
+    }
+
+    private function showDashboard(): void {
+        $uid = (int)($_SESSION['user']['id'] ?? 0);
+
+        $mine = $this->db->prepare('
+            SELECT id, title, description, event_date, location
+            FROM events
+            WHERE created_by = :uid
+            ORDER BY event_date DESC
+        ');
+        $mine->execute([':uid' => $uid]);
+        $user_events = $mine->fetchAll(PDO::FETCH_ASSOC);
+
+        $all = $this->db->query('
+            SELECT e.id, e.title, e.description, e.event_date, e.location,
+                   u.first_name, u.last_name
+            FROM events e
+            LEFT JOIN users u ON e.created_by = u.id
+            ORDER BY e.event_date DESC
+        ');
+        $all_events = $all->fetchAll(PDO::FETCH_ASSOC);
+
+        $upcoming_count = 0;
+        $now = time();
+        foreach ($all_events as $event) {
+            if (strtotime($event['event_date']) > $now) {
+                $upcoming_count++;
             }
         }
-        
-        if (!empty($_POST['email']) && !$this->validateEmail($_POST['email'])) {
-            $errors[] = "Invalid email format";
-        }
-        
-        if (!empty($_POST['password']) && !$this->validatePassword($_POST['password'])) {
-            $errors[] = "Password must be at least 8 characters with 1 uppercase letter and 1 number";
-        }
-        
-        if ($_POST['password'] !== $_POST['confirm_password']) {
-            $errors[] = "Passwords do not match";
-        }
-        
-        if (empty($errors)) {
-            $stmt = $this->db->prepare("SELECT id FROM users WHERE email = ?");
-            $stmt->execute([$this->sanitizeInput($_POST['email'])]);
-            
-            if ($stmt->fetch()) {
-                $errors[] = "Email already registered";
-            } else {
-                $stmt = $this->db->prepare("INSERT INTO users (email, password, first_name, last_name) VALUES (?, ?, ?, ?)");
-                $hashed_password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-                
-                if ($stmt->execute([
-                    $this->sanitizeInput($_POST['email']),
-                    $hashed_password,
-                    $this->sanitizeInput($_POST['first_name']),
-                    $this->sanitizeInput($_POST['last_name'])
-                ])) {
-                    header('Location: index.php?action=login&registered=1');
-                    exit();
-                } else {
-                    $errors[] = "Registration failed. Please try again.";
-                }
-            }
-        }
-        
-        $this->showRegistrationForm($errors);
+
+
+        $user = $_SESSION['user'] ?? []; // <-- pass $user
+        $display_name = trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? ''));
+        if ($display_name === '') { $display_name = $user['email'] ?? 'User'; }
+
+        include __DIR__ . '/../views/dashboard.php';
     }
-    
-    private function showLoginForm($errors = []) {
-        $message = '';
-        if (isset($_GET['registered'])) {
-            $message = '<div class="success">Registration successful! Please log in.</div>';
+
+    private function handleLogout(): void {
+        $_SESSION = [];
+        if (ini_get('session.use_cookies')) {
+            $p = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000, $p['path'], $p['domain'] ?? '', $p['secure'] ?? false, $p['httponly'] ?? true);
         }
-        $_SESSION['login_token'] = $this->generateSessionToken();
-        include 'views/login.php';
-    }
-    
-    private function showRegistrationForm($errors = []) {
-        $_SESSION['register_token'] = $this->generateSessionToken();
-        include 'views/register.php';
-    }
-    
-    private function showDashboard() {
-        $stmt = $this->db->prepare("SELECT * FROM events WHERE created_by = ? ORDER BY event_date DESC");
-        $stmt->execute([$_SESSION['user_id']]);
-        $user_events = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        $stmt = $this->db->prepare("SELECT e.*, u.first_name, u.last_name FROM events e JOIN users u ON e.created_by = u.id ORDER BY e.event_date ASC");
-        $stmt->execute();
-        $all_events = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        include 'views/dashboard.php';
-    }
-    
-    private function handleLogout() {
         session_destroy();
-        header('Location: index.php?action=login');
-        exit();
+        header('Location: /Campus-Event-Management/index.php?action=login');
+        exit;
     }
-    
-    private function handleApiRequest() {
+
+    private function handleApiRequest(): void {
         header('Content-Type: application/json');
-        
         $endpoint = $_GET['endpoint'] ?? '';
-        
+
         switch ($endpoint) {
             case 'user_info':
                 if ($this->isLoggedIn()) {
-                    $stmt = $this->db->prepare("SELECT id, email, first_name, last_name, created_at FROM users WHERE id = ?");
-                    $stmt->execute([$_SESSION['user_id']]);
+                    $uid = (int)$_SESSION['user']['id'];
+                    $stmt = $this->db->prepare('SELECT id, email, first_name, last_name, created_at FROM users WHERE id = :id');
+                    $stmt->execute([':id' => $uid]);
                     $user = $stmt->fetch(PDO::FETCH_ASSOC);
-                    
                     echo json_encode(['success' => true, 'user' => $user]);
                 } else {
                     echo json_encode(['success' => false, 'message' => 'Not logged in']);
                 }
                 break;
-                
+
             case 'events':
-                $stmt = $this->db->prepare("SELECT e.*, u.first_name, u.last_name FROM events e JOIN users u ON e.created_by = u.id ORDER BY e.event_date ASC");
-                $stmt->execute();
+                $stmt = $this->db->query('
+                    SELECT e.id, e.title, e.description, e.event_date, e.location,
+                           u.first_name, u.last_name
+                    FROM events e
+                    LEFT JOIN users u ON e.created_by = u.id
+                    ORDER BY e.event_date ASC
+                ');
                 $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                
                 echo json_encode(['success' => true, 'events' => $events]);
                 break;
-                
+
             default:
                 echo json_encode(['success' => false, 'message' => 'Invalid endpoint']);
         }
-        exit();
+        exit;
     }
 }
-?>
