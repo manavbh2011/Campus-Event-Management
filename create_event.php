@@ -57,7 +57,7 @@ function combine_ts(string $date, string $time): string {
 }
 function insert_event(PDO $pdo, array $data): array {
   $stmt = $pdo->prepare('
-    INSERT INTO events (title, description, event_date, location, created_by)
+    INSERT INTO campus_events (title, description, event_date, location, created_by)
     VALUES (:title, :description, :event_date, :location, :created_by)
   ');
   $ok = $stmt->execute([
@@ -160,11 +160,11 @@ $page_title = 'Create Event';
 <header class="navbar">
   <div class="logo">EventConnect</div>
   <nav>
-    <a href="/Campus-Event-Management/index.php?action=dashboard" class="nav-btn">Dashboard</a>
-    <a href="/Campus-Event-Management/static/pages/search.html" class="nav-btn">Find Events</a>
-    <a href="/Campus-Event-Management/create_event.php" class="nav-btn">Create Event</a>
-    <a href="/Campus-Event-Management/profile.php" class="nav-btn">Profile</a>
-    <a href="/Campus-Event-Management/index.php?action=logout" class="nav-btn">Logout</a>
+    <a href="index.php?action=dashboard" class="nav-btn">Dashboard</a>
+    <a href="search.php" class="nav-btn">Find Events</a>
+    <a href="create_event.php" class="nav-btn">Create Event</a>
+    <a href="profile.php" class="nav-btn">Profile</a>
+    <a href="index.php?action=logout" class="nav-btn">Logout</a>
   </nav>
 </header>
 

@@ -48,14 +48,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $db  = new Database();
       $pdo = $db->getConnection();
 
-      $check = $pdo->prepare('SELECT 1 FROM users WHERE email = :email');
+      $check = $pdo->prepare('SELECT 1 FROM campus_users WHERE email = :email');
       $check->execute([':email' => $email]);
       if ($check->fetchColumn()) {
         $errors[] = 'An account with that email already exists.';
       } else {
 
         $stmt = $pdo->prepare('
-          INSERT INTO users (email, password, first_name, last_name)
+          INSERT INTO campus_users (email, password, first_name, last_name)
           VALUES (:e, :p, :f, :l)
           RETURNING id
         ');

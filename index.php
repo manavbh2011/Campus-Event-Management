@@ -1,11 +1,12 @@
 <?php
+/*Link to website: https://cs4640.cs.virginia.edu/wtm6hs/Campus-Event-Management/*/ 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 session_set_cookie_params([
   'lifetime' => 0,
-  'path'     => '/Campus-Event-Management',
+  'path'     => '/wtm6hs/Campus-Event-Management',
   'httponly' => true,
   'samesite' => 'Lax'
 ]);
@@ -15,6 +16,7 @@ require_once __DIR__ . '/config/database.php';
 if (!function_exists('initializeDatabase')) {
   throw new RuntimeException('initializeDatabase() not found. Is config/database.php correct?');
 }
+
 initializeDatabase();
 
 $controllerPath = __DIR__ . '/controllers/EventManagementController.php';
@@ -35,7 +37,7 @@ if ($action === 'logout') {
     setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'] ?? '', $params['secure'] ?? false, $params['httponly'] ?? true);
   }
   session_destroy();
-  header('Location: /Campus-Event-Management/index.php?action=login');
+  header('Location: index.php?action=login');
   exit;
 }
 

@@ -35,7 +35,7 @@ if (!function_exists('csrf_field')) {
 
 /* Access guard (absolute redirect) */
 if (!isset($_SESSION['user'])) {
-  header('Location: /Campus-Event-Management/index.php?action=login');
+  header('Location: index.php?action=login');
   exit;
 }
 
@@ -58,7 +58,7 @@ function strong_password($p): bool {
   return (bool)preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$/', $p);
 }
 function refresh_session_user(PDO $pdo, int $id): void {
-  $stmt = $pdo->prepare('SELECT id, email, first_name, last_name FROM users WHERE id=:id');
+  $stmt = $pdo->prepare('SELECT id, email, first_name, last_name FROM campus_users WHERE id=:id');
   $stmt->execute([':id' => $id]);
   $_SESSION['user'] = $stmt->fetch(PDO::FETCH_ASSOC);
 }
@@ -99,13 +99,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if ($v !== $profile_version) $errors[] = 'Profile version mismatch. Please refresh.';
 
   if (!$errors) {
-    $stmt = $pdo->prepare('UPDATE users SET first_name=:fn, last_name=:ln WHERE id=:id');
+    $stmt = $pdo->prepare('UPDATE campus_users SET first_name=:fn, last_name=:ln WHERE id=:id');
     $ok1  = $stmt->execute([':fn'=>$first_name, ':ln'=>$last_name, ':id'=>$user['id']]);
 
     $ok2 = true;
     if ($new_password !== '') {
       $hash  = password_hash($new_password, PASSWORD_DEFAULT);
-      $stmt2 = $pdo->prepare('UPDATE users SET password=:pw WHERE id=:id');
+      $stmt2 = $pdo->prepare('UPDATE campus_users SET password=:pw WHERE id=:id');
       $ok2   = $stmt2->execute([':pw'=>$hash, ':id'=>$user['id']]);
     }
 
@@ -127,17 +127,17 @@ $page_title = 'Profile';
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= htmlspecialchars($page_title) ?> | EventConnect</title>
-  <link rel="stylesheet" href="/Campus-Event-Management/static/css/style.css">
+  <link rel="stylesheet" href="static/css/style.css">
 </head>
 <body>
 <header class="navbar">
   <div class="logo">EventConnect</div>
   <nav>
-    <a href="/Campus-Event-Management/index.php?action=dashboard" class="nav-btn">Dashboard</a>
-    <a href="/Campus-Event-Management/static/pages/search.html" class="nav-btn">Find Events</a>
-    <a href="/Campus-Event-Management/create_event.php" class="nav-btn">Create Event</a>
-    <a href="/Campus-Event-Management/profile.php" class="nav-btn">Profile</a>
-    <a href="/Campus-Event-Management/index.php?action=logout" class="nav-btn">Logout</a>
+    <a href="index.php?action=dashboard" class="nav-btn">Dashboard</a>
+    <a href="search.php" class="nav-btn">Find Events</a>
+    <a href="create_event.php" class="nav-btn">Create Event</a>
+    <a href="profile.php" class="nav-btn">Profile</a>
+    <a href="index.php?action=logout" class="nav-btn">Logout</a>
   </nav>
 </header>
 
@@ -189,7 +189,7 @@ $page_title = 'Profile';
 
         <div class="actions">
           <button type="submit">Update Profile</button>
-          <a class="nav-btn" href="/Campus-Event-Management/profile.php?action=json" aria-label="View profile as JSON">View JSON</a>
+          <a class="nav-btn" href="profile.php?action=json" aria-label="View profile as JSON">View JSON</a>
         </div>
       </form>
     </div>

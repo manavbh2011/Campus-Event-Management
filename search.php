@@ -22,8 +22,8 @@ if (isset($_GET['search'])) {
     
     try {
         $sql = "SELECT e.*, u.first_name, u.last_name 
-                FROM events e 
-                LEFT JOIN users u ON e.created_by = u.id 
+                FROM campus_events e 
+                LEFT JOIN campus_users u ON e.created_by = u.id 
                 WHERE e.event_date >= CURRENT_DATE";
         $params = [];
         
@@ -61,13 +61,13 @@ $isLoggedIn = isset($_SESSION['user_id']);
 </head>
 <body>
     <header class="navbar">
-        <div class="logo">EventFinder</div>
+        <div class="logo">EventConnect</div>
         <nav>
             <?php if ($isLoggedIn): ?>
                 <a href="index.php?action=dashboard" class="nav-btn">Dashboard</a>
                 <a href="search.php" class="nav-btn">Find Events</a>
-                <a href="static/pages/create_event.html" class="nav-btn">Create Event</a>
-                <a href="static/pages/profile.html" class="nav-btn">Profile</a>
+                <a href="create_event.php" class="nav-btn">Create Event</a>
+                <a href="profile.php" class="nav-btn">Profile</a>
                 <a href="index.php?action=logout" class="nav-btn">Logout</a>
             <?php else: ?>
                 <a href="index.php?action=login" class="nav-btn">Login</a>

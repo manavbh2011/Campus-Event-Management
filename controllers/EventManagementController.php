@@ -72,7 +72,7 @@ class EventManagementController {
 
     private function requireLogin(): void {
         if (!$this->isLoggedIn()) {
-            header('Location: /Campus-Event-Management/index.php?action=login');
+            header('Location: index.php?action=login');
             exit;
         }
     }
@@ -99,7 +99,7 @@ class EventManagementController {
             return;
         }
 
-        $stmt = $this->db->prepare('SELECT id, email, password, first_name, last_name FROM users WHERE email = :email');
+        $stmt = $this->db->prepare('SELECT id, email, password, first_name, last_name FROM campus_users WHERE email = :email');
         $stmt->execute([':email' => $email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -108,7 +108,7 @@ class EventManagementController {
             return;
         }
 
-        $this->db->prepare('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = :id')
+        $this->db->prepare('UPDATE campus_users SET last_login = CURRENT_TIMESTAMP WHERE id = :id')
                  ->execute([':id' => $user['id']]);
 
         $_SESSION['user'] = [
@@ -123,7 +123,7 @@ class EventManagementController {
 
         session_regenerate_id(true);
         session_write_close();
-        header('Location: /Campus-Event-Management/index.php?action=dashboard');
+        header('Location: index.php?action=dashboard');
         exit;
     }
 
@@ -151,7 +151,7 @@ class EventManagementController {
             return;
         }
 
-        $exists = $this->db->prepare('SELECT 1 FROM users WHERE email = :email');
+        $exists = $this->db->prepare('SELECT 1 FROM campus_users WHERE email = :email');
         $exists->execute([':email' => $email]);
         if ($exists->fetchColumn()) {
             $this->showRegistrationForm(['An account with that email already exists.']);
@@ -159,7 +159,7 @@ class EventManagementController {
         }
 
         $stmt = $this->db->prepare('
-            INSERT INTO users (email, password, first_name, last_name)
+            INSERT INTO campus_users (email, password, first_name, last_name)
             VALUES (:e, :p, :f, :l)
             RETURNING id
         ');
@@ -183,7 +183,7 @@ class EventManagementController {
 
         session_regenerate_id(true);
         session_write_close();
-        header('Location: /Campus-Event-Management/profile.php');
+        header('Location: index.php?action=dashboard');
         exit;
     }
 
@@ -209,7 +209,7 @@ class EventManagementController {
 
         $mine = $this->db->prepare('
             SELECT id, title, description, event_date, location
-            FROM events
+            FROM campus_events
             WHERE created_by = :uid
             ORDER BY event_date DESC
         ');
@@ -219,8 +219,8 @@ class EventManagementController {
         $all = $this->db->query('
             SELECT e.id, e.title, e.description, e.event_date, e.location,
                    u.first_name, u.last_name
-            FROM events e
-            LEFT JOIN users u ON e.created_by = u.id
+            FROM campus_events e
+            LEFT JOIN campus_users u ON e.created_by = u.id
             ORDER BY e.event_date DESC
         ');
         $all_events = $all->fetchAll(PDO::FETCH_ASSOC);
@@ -248,7 +248,7 @@ class EventManagementController {
             setcookie(session_name(), '', time() - 42000, $p['path'], $p['domain'] ?? '', $p['secure'] ?? false, $p['httponly'] ?? true);
         }
         session_destroy();
-        header('Location: /Campus-Event-Management/index.php?action=login');
+        header('Location: index.php?action=login');
         exit;
     }
 
@@ -260,7 +260,7 @@ class EventManagementController {
             case 'user_info':
                 if ($this->isLoggedIn()) {
                     $uid = (int)$_SESSION['user']['id'];
-                    $stmt = $this->db->prepare('SELECT id, email, first_name, last_name, created_at FROM users WHERE id = :id');
+                    $stmt = $this->db->prepare('SELECT id, email, first_name, last_name, created_at FROM campus_users WHERE id = :id');
                     $stmt->execute([':id' => $uid]);
                     $user = $stmt->fetch(PDO::FETCH_ASSOC);
                     echo json_encode(['success' => true, 'user' => $user]);
@@ -273,8 +273,8 @@ class EventManagementController {
                 $stmt = $this->db->query('
                     SELECT e.id, e.title, e.description, e.event_date, e.location,
                            u.first_name, u.last_name
-                    FROM events e
-                    LEFT JOIN users u ON e.created_by = u.id
+                    FROM campus_events e
+                    LEFT JOIN campus_users u ON e.created_by = u.id
                     ORDER BY e.event_date ASC
                 ');
                 $events = $stmt->fetchAll(PDO::FETCH_ASSOC);

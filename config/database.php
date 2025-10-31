@@ -1,15 +1,16 @@
 <?php
 class Database {
-    private $host = 'db';
-    private $db_name = 'example';
-    private $username = 'localuser';
-    private $password = 'cs4640LocalUser!';
+    private $host = 'localhost';
+    private $db_name = 'wtm6hs';
+    private $username = 'wtm6hs';
+    private $password = 'xTb7GT1RRuTh';
+    private $port = 5432;
     private $conn;
 
     public function getConnection() {
         $this->conn = null;
         try {
-            $this->conn = new PDO("pgsql:host=" . $this->host . ";dbname=" . $this->db_name, 
+            $this->conn = new PDO("pgsql:host=" . $this->host . ";port=" . $this->port . ";dbname=" . $this->db_name, 
                                 $this->username, $this->password);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch(PDOException $e) {
@@ -24,7 +25,7 @@ function initializeDatabase() {
     $conn = $database->getConnection();
     
     $sql = "
-    CREATE TABLE IF NOT EXISTS users (
+    CREATE TABLE IF NOT EXISTS campus_users (
         id SERIAL PRIMARY KEY,
         email VARCHAR(255) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
@@ -34,7 +35,7 @@ function initializeDatabase() {
         last_login TIMESTAMP
     );
     
-    CREATE TABLE IF NOT EXISTS events (
+    CREATE TABLE IF NOT EXISTS campus_events (
         id SERIAL PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
         description TEXT,
@@ -43,30 +44,30 @@ function initializeDatabase() {
         capacity INTEGER DEFAULT 0,
         category VARCHAR(100) DEFAULT 'general',
         status VARCHAR(50) DEFAULT 'active',
-        created_by INTEGER REFERENCES users(id),
+        created_by INTEGER REFERENCES campus_users(id),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     
-    CREATE TABLE IF NOT EXISTS event_registrations (
+    CREATE TABLE IF NOT EXISTS campus_event_registrations (
         id SERIAL PRIMARY KEY,
-        event_id INTEGER REFERENCES events(id) ON DELETE CASCADE,
-        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        event_id INTEGER REFERENCES campus_events(id) ON DELETE CASCADE,
+        user_id INTEGER REFERENCES campus_users(id) ON DELETE CASCADE,
         registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         status VARCHAR(50) DEFAULT 'registered',
         UNIQUE(event_id, user_id)
     );
     
-    CREATE TABLE IF NOT EXISTS event_categories (
+    CREATE TABLE IF NOT EXISTS campus_event_categories (
         id SERIAL PRIMARY KEY,
         name VARCHAR(100) UNIQUE NOT NULL,
         description TEXT,
         color VARCHAR(7) DEFAULT '#007bff'
     );
     
-    CREATE TABLE IF NOT EXISTS user_profiles (
+    CREATE TABLE IF NOT EXISTS campus_user_profiles (
         id SERIAL PRIMARY KEY,
-        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE UNIQUE,
+        user_id INTEGER REFERENCES campus_users(id) ON DELETE CASCADE UNIQUE,
         phone VARCHAR(20),
         department VARCHAR(100),
         year_of_study INTEGER,
