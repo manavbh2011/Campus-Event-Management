@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login - Campus Event System</title>
-  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="stylesheet" href="static/css/style.css" />
 </head>
 <body>
   <header class="navbar">
@@ -20,13 +20,11 @@
       <h1>Welcome Back</h1>
       <p>Please log in to access your campus events and manage your profile.</p>
 
-      <?php if (!empty($view_message)): ?>
-        <div class="notice"><?php echo htmlspecialchars($view_message); ?></div>
-      <?php endif; ?>
-
-      <?php if (!empty($view_errors)): ?>
-        <div class="error" role="alert" aria-live="assertive">
-          <?php foreach ($view_errors as $error): ?>
+      <?php echo $message ?? ''; ?>
+      
+      <?php if (!empty($errors)): ?>
+        <div class="error">
+          <?php foreach ($errors as $error): ?>
             <p><?php echo htmlspecialchars($error); ?></p>
           <?php endforeach; ?>
         </div>

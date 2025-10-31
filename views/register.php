@@ -1,5 +1,4 @@
 <?php
-/* ---------- Session + Cookie scope (must be first) ---------- */
 if (session_status() === PHP_SESSION_NONE) {
     session_set_cookie_params([
       'lifetime' => 0,
@@ -10,12 +9,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-/* ---------- CSRF token for the register form ---------- */
 if (empty($_SESSION['register_token'])) {
   $_SESSION['register_token'] = bin2hex(random_bytes(32));
 }
 
-/* ---------- Server-side handler ---------- */
 require_once __DIR__ . '/../config/database.php';
 
 $errors = [];
@@ -26,14 +23,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors[] = 'Security check failed. Please refresh and try again.';
   }
 
-  // Collect & trim inputs
   $first_name       = trim($_POST['first_name'] ?? '');
   $last_name        = trim($_POST['last_name'] ?? '');
   $email            = trim($_POST['email'] ?? '');
   $password         = (string)($_POST['password'] ?? '');
   $confirm_password = (string)($_POST['confirm_password'] ?? '');
 
-  // Validation helpers
   $valid_name = function(string $n): bool {
     return (bool)preg_match('/^[\p{L}\p{M}\s\'\-\.]{2,}$/u', $n);
   };
@@ -42,7 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     return (bool)preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $p);
   };
 
-  // Validate fields
   if (!$valid_name($first_name)) $errors[] = 'First name must be 2+ letters.';
   if (!$valid_name($last_name))  $errors[] = 'Last name must be 2+ letters.';
   if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Please enter a valid email.';
@@ -54,13 +48,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $db  = new Database();
       $pdo = $db->getConnection();
 
-      // Check for existing email
       $check = $pdo->prepare('SELECT 1 FROM users WHERE email = :email');
       $check->execute([':email' => $email]);
       if ($check->fetchColumn()) {
         $errors[] = 'An account with that email already exists.';
       } else {
-        // Insert user and get id
+
         $stmt = $pdo->prepare('
           INSERT INTO users (email, password, first_name, last_name)
           VALUES (:e, :p, :f, :l)
@@ -74,14 +67,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
         $newId = (int)$stmt->fetchColumn();
 
-        // Normalize session for the rest of the app
         $_SESSION['user'] = [
           'id'         => $newId,
           'email'      => $email,
           'first_name' => $first_name,
           'last_name'  => $last_name,
         ];
-        // Optional legacy keys (since your session_check showed them)
+
         $_SESSION['user_id']    = $newId;
         $_SESSION['user_email'] = $email;
         $_SESSION['user_name']  = trim($first_name . ' ' . $last_name);
@@ -103,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Register - Campus Event System</title>
-  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="stylesheet" href="static/css/style.css" />
 </head>
 <body>
   <header class="navbar">
@@ -127,7 +119,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
       <?php endif; ?>
 
-      <!-- Keep your action routed through index.php if you prefer the controller -->
       <form class="login-form" action="index.php?action=register" method="POST" novalidate>
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['register_token']); ?>">
 

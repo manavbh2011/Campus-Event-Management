@@ -1,9 +1,6 @@
 -- Campus Event Management Database Schema
 -- PostgreSQL Database: campus_events
 
--- Create database (run this first if database doesn't exist)
--- CREATE DATABASE campus_events;
-
 -- Users table for authentication and profiles
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,

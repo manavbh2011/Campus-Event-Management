@@ -11,7 +11,7 @@
     <div class="logo">EventConnect</div>
     <nav>
       <a href="/Campus-Event-Management/index.php?action=dashboard" class="nav-btn">Dashboard</a>
-      <a href="/Campus-Event-Management/static/pages/search.html" class="nav-btn">Find Events</a>
+      <a href="/Campus-Event-Management/search.php" class="nav-btn">Find Events</a>
       <a href="/Campus-Event-Management/create_event.php" class="nav-btn">Create Event</a>
       <a href="/Campus-Event-Management/profile.php" class="nav-btn">Profile</a>
       <a href="/Campus-Event-Management/index.php?action=logout" class="nav-btn">Logout</a>

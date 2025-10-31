@@ -187,7 +187,6 @@ $page_title = 'Create Event';
       <form class="create-form" method="post" novalidate aria-describedby="reqnote">
         <?= csrf_field() ?>
         <input type="hidden" name="form_version" value="<?= htmlspecialchars($form_version) ?>">
-        <p id="reqnote">Server-side validation ensures accessibility and correctness.</p>
 
         <div class="form-group">
           <label for="title">Event Title <span aria-hidden="true">*</span></label>
@@ -219,7 +218,6 @@ $page_title = 'Create Event';
         <div class="actions">
           <button type="submit">Create Event</button>
           <button type="button" id="btn-preview" aria-describedby="previewHelp">Preview JSON</button>
-          <small id="previewHelp">Validates and shows JSON (no DB write).</small>
         </div>
       </form>
 
