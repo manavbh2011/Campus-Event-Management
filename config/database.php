@@ -40,8 +40,39 @@ function initializeDatabase() {
         description TEXT,
         event_date TIMESTAMP NOT NULL,
         location VARCHAR(255),
+        capacity INTEGER DEFAULT 0,
+        category VARCHAR(100) DEFAULT 'general',
+        status VARCHAR(50) DEFAULT 'active',
         created_by INTEGER REFERENCES users(id),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    
+    CREATE TABLE IF NOT EXISTS event_registrations (
+        id SERIAL PRIMARY KEY,
+        event_id INTEGER REFERENCES events(id) ON DELETE CASCADE,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        status VARCHAR(50) DEFAULT 'registered',
+        UNIQUE(event_id, user_id)
+    );
+    
+    CREATE TABLE IF NOT EXISTS event_categories (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100) UNIQUE NOT NULL,
+        description TEXT,
+        color VARCHAR(7) DEFAULT '#007bff'
+    );
+    
+    CREATE TABLE IF NOT EXISTS user_profiles (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE UNIQUE,
+        phone VARCHAR(20),
+        department VARCHAR(100),
+        year_of_study INTEGER,
+        bio TEXT,
+        profile_image VARCHAR(255),
+        preferences JSONB
     );";
     
     $conn->exec($sql);

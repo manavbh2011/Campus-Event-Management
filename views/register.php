@@ -1,12 +1,14 @@
 <?php
 /* ---------- Session + Cookie scope (must be first) ---------- */
-session_set_cookie_params([
-  'lifetime' => 0,
-  'path'     => '/Campus-Event-Management', // <-- adjust if your app folder differs
-  'httponly' => true,
-  'samesite' => 'Lax'
-]);
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
+if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+      'lifetime' => 0,
+      'path'     => '/',
+      'httponly' => true,
+      'samesite' => 'Lax'
+    ]);
+    session_start();
+}
 
 /* ---------- CSRF token for the register form ---------- */
 if (empty($_SESSION['register_token'])) {
@@ -14,7 +16,7 @@ if (empty($_SESSION['register_token'])) {
 }
 
 /* ---------- Server-side handler ---------- */
-require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/../config/database.php';
 
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -86,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         session_regenerate_id(true);
         session_write_close();
-        header('Location: /Campus-Event-Management/profile.php');
+        header('Location: profile.php');
         exit;
       }
     } catch (Throwable $e) {
@@ -101,14 +103,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Register - Campus Event System</title>
-  <link rel="stylesheet" href="/Campus-Event-Management/static/css/style.css" />
+  <link rel="stylesheet" href="/static/css/style.css" />
 </head>
 <body>
   <header class="navbar">
     <div class="logo">EventConnect</div>
     <nav>
-      <a href="/Campus-Event-Management/index.php?action=login" class="nav-btn">Login</a>
-      <a href="/Campus-Event-Management/index.php?action=register" class="nav-btn">Sign Up</a>
+      <a href="index.php?action=login" class="nav-btn">Login</a>
+      <a href="index.php?action=register" class="nav-btn">Sign Up</a>
     </nav>
   </header>
 
@@ -126,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <?php endif; ?>
 
       <!-- Keep your action routed through index.php if you prefer the controller -->
-      <form class="login-form" action="/Campus-Event-Management/index.php?action=register" method="POST" novalidate>
+      <form class="login-form" action="index.php?action=register" method="POST" novalidate>
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['register_token']); ?>">
 
         <div class="form-group">
@@ -165,7 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button type="submit" class="nav-btn">Create Account</button>
       </form>
 
-      <p>Already have an account? <a href="/Campus-Event-Management/index.php?action=login">Login here</a></p>
+      <p>Already have an account? <a href="index.php?action=login">Login here</a></p>
     </div>
   </main>
 

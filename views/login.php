@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login - Campus Event System</title>
-  <link rel="stylesheet" href="/Campus-Event-Management/static/css/style.css" />
+  <link rel="stylesheet" href="/static/css/style.css" />
 </head>
 <body>
   <header class="navbar">
     <div class="logo">EventConnect</div>
     <nav>
-      <a href="/Campus-Event-Management/index.php?action=login" class="nav-btn">Login</a>
-      <a href="/Campus-Event-Management/index.php?action=register" class="nav-btn">Sign Up</a>
+      <a href="index.php?action=login" class="nav-btn">Login</a>
+      <a href="index.php?action=register" class="nav-btn">Sign Up</a>
     </nav>
   </header>
 
@@ -32,7 +32,7 @@
         </div>
       <?php endif; ?>
 
-      <form class="login-form" action="/Campus-Event-Management/index.php?action=login" method="POST" novalidate>
+      <form class="login-form" action="index.php?action=login" method="POST" novalidate>
         <input type="hidden" name="form_token" value="<?php echo htmlspecialchars($_SESSION['login_token'] ?? ''); ?>">
 
         <div class="form-group">
@@ -51,7 +51,7 @@
         <button type="submit" class="nav-btn">Login</button>
       </form>
 
-      <p>Don't have an account? <a href="/Campus-Event-Management/index.php?action=register">Sign up here</a></p>
+      <p>Don't have an account? <a href="index.php?action=register">Sign up here</a></p>
     </div>
   </main>
 
