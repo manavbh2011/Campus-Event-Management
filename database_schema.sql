@@ -32,8 +32,8 @@ CREATE TABLE IF NOT EXISTS campus_events (
 -- Event registrations for tracking attendees
 CREATE TABLE IF NOT EXISTS campus_event_registrations (
     id SERIAL PRIMARY KEY,
-    event_id INTEGER REFERENCES events(id) ON DELETE CASCADE,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    event_id INTEGER REFERENCES campus_events(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES campus_users(id) ON DELETE CASCADE,
     registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status VARCHAR(50) DEFAULT 'registered',
     UNIQUE(event_id, user_id)
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS campus_event_categories (
 -- User profiles for additional information
 CREATE TABLE IF NOT EXISTS campus_user_profiles (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE UNIQUE,
+    user_id INTEGER REFERENCES campus_users(id) ON DELETE CASCADE UNIQUE,
     phone VARCHAR(20),
     department VARCHAR(100),
     year_of_study INTEGER,
