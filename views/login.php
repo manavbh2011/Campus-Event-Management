@@ -22,13 +22,13 @@
 
       <?php echo $message ?? ''; ?>
       
-      <?php if (!empty($errors)): ?>
-        <div class="error">
+      <div id="login-error"<?php if (!empty($errors)): ?> style="color: red; margin-bottom: 15px; display: block;"<?php else: ?> style="color: red; margin-bottom: 15px; display: none;"<?php endif; ?>>
+        <?php if (!empty($errors)): ?>
           <?php foreach ($errors as $error): ?>
-            <p><?php echo htmlspecialchars($error); ?></p>
+            <?php echo htmlspecialchars($error); ?>
           <?php endforeach; ?>
-        </div>
-      <?php endif; ?>
+        <?php endif; ?>
+      </div>
 
       <form class="login-form" action="index.php?action=login" method="POST" novalidate>
         <input type="hidden" name="form_token" value="<?php echo htmlspecialchars($_SESSION['login_token'] ?? ''); ?>">
@@ -56,5 +56,8 @@
   <footer>
     <p>&copy; 2025 Campus Event Management System | Programming Languages for Web Applications</p>
   </footer>
+  
+  <script src="static/js/register.js"></script>
+  <script src="static/js/login.js"></script>
 </body>
 </html>
