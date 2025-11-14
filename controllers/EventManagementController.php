@@ -121,8 +121,7 @@ class EventManagementController {
         $_SESSION['user_email'] = $user['email'];
         $_SESSION['user_name']  = trim($user['first_name'].' '.$user['last_name']);
 
-        session_regenerate_id(true);
-        session_write_close();
+        session_regenerate_id(false);
         header('Location: index.php?action=dashboard');
         exit;
     }
@@ -191,8 +190,7 @@ class EventManagementController {
         if (empty($_SESSION['login_token'])) {
             $_SESSION['login_token'] = $this->generateSessionToken();
         }
-        $view_errors  = $errors;
-        $view_message = isset($_GET['registered']) ? 'Registration successful! Please log in.' : '';
+        $message = isset($_GET['registered']) ? 'Registration successful! Please log in.' : '';
         include __DIR__ . '/../views/login.php';
     }
 
@@ -271,7 +269,8 @@ class EventManagementController {
 
             case 'events':
                 $stmt = $this->db->query('
-                    SELECT e.id, e.title, e.description, e.event_date, e.location,
+                    SELECT e.id, e.title, e.description, e.event_date, e.location, 
+                           e.capacity, e.category, e.status, e.created_by, e.created_at, e.updated_at,
                            u.first_name, u.last_name
                     FROM campus_events e
                     LEFT JOIN campus_users u ON e.created_by = u.id

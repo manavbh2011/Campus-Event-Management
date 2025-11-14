@@ -57,14 +57,16 @@ function combine_ts(string $date, string $time): string {
 }
 function insert_event(PDO $pdo, array $data): array {
   $stmt = $pdo->prepare('
-    INSERT INTO campus_events (title, description, event_date, location, created_by)
-    VALUES (:title, :description, :event_date, :location, :created_by)
+    INSERT INTO campus_events (title, description, event_date, location, capacity, category, created_by)
+    VALUES (:title, :description, :event_date, :location, :capacity, :category, :created_by)
   ');
   $ok = $stmt->execute([
     ':title' => $data['title'],
     ':description' => $data['description'],
     ':event_date' => $data['event_ts'],
     ':location' => $data['location'],
+    ':capacity' => $data['capacity'],
+    ':category' => $data['category'],
     ':created_by' => $_SESSION['user']['id'] ?? null
   ]);
   return [$ok, $ok ? null : 'Database insert failed.'];
@@ -110,6 +112,8 @@ $defaults = [
   'date' => '',
   'time' => '',
   'location' => $_GET['location'] ?? ($_COOKIE['last_location'] ?? ''),
+  'capacity' => '0',
+  'category' => 'general',
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -121,6 +125,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     'date' => $_POST['date'] ?? '',
     'time' => $_POST['time'] ?? '',
     'location' => s($_POST['location'] ?? ''),
+    'capacity' => (int)($_POST['capacity'] ?? 0),
+    'category' => s($_POST['category'] ?? 'general'),
     'version' => $_POST['form_version'] ?? ''
   ];
 
@@ -200,11 +206,11 @@ $page_title = 'Create Event';
 
         <div class="form-row">
           <div class="form-group">
-            <label for="date">Date (YYYY-MM-DD) <span aria-hidden="true">*</span></label>
+            <label for="date">Date <span aria-hidden="true">*</span></label>
             <input id="date" name="date" type="date" required value="<?= htmlspecialchars($defaults['date']) ?>" />
           </div>
           <div class="form-group">
-            <label for="time">Time (24h HH:MM) <span aria-hidden="true">*</span></label>
+            <label for="time">Time <span aria-hidden="true">*</span></label>
             <input id="time" name="time" type="time" required value="<?= htmlspecialchars($defaults['time']) ?>" />
           </div>
         </div>
@@ -213,6 +219,24 @@ $page_title = 'Create Event';
           <label for="location">Location <span aria-hidden="true">*</span></label>
           <input id="location" name="location" type="text" required value="<?= htmlspecialchars($defaults['location']) ?>" />
           <small>We remember your last location choice (cookie).</small>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="capacity">Capacity</label>
+            <input id="capacity" name="capacity" type="number" min="0" value="<?= htmlspecialchars($defaults['capacity'] ?? '0') ?>" />
+          </div>
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select id="category" name="category">
+              <option value="general" <?= ($defaults['category'] ?? 'general') === 'general' ? 'selected' : '' ?>>General</option>
+              <option value="academic" <?= ($defaults['category'] ?? '') === 'academic' ? 'selected' : '' ?>>Academic</option>
+              <option value="social" <?= ($defaults['category'] ?? '') === 'social' ? 'selected' : '' ?>>Social</option>
+              <option value="sports" <?= ($defaults['category'] ?? '') === 'sports' ? 'selected' : '' ?>>Sports</option>
+              <option value="cultural" <?= ($defaults['category'] ?? '') === 'cultural' ? 'selected' : '' ?>>Cultural</option>
+              <option value="career" <?= ($defaults['category'] ?? '') === 'career' ? 'selected' : '' ?>>Career</option>
+            </select>
+          </div>
         </div>
 
         <div class="actions">
