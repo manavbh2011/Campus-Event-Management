@@ -45,56 +45,14 @@
         </div>
       </div>
 
-      <div class="events-section">
-        <h2>Your Events</h2>
-        <div class="event-list">
-          <?php if (empty($user_events)): ?>
-            <div class="event-item">
-              <div>
-                <h3>No events created yet</h3>
-                <p>Create your first event to get started!</p>
-              </div>
-            </div>
-          <?php else: ?>
-            <?php foreach ($user_events as $event): ?>
-              <div class="event-item">
-                <div>
-                  <h3><?php echo htmlspecialchars($event['title']); ?></h3>
-                  <p>
-                    <?php echo date('M j, Y g:i A', strtotime($event['event_date'])); ?>
-                    &nbsp;–&nbsp; <?php echo htmlspecialchars($event['location']); ?>
-                  </p>
-                </div>
-              </div>
-            <?php endforeach; ?>
-          <?php endif; ?>
-        </div>
-      </div>
-
-      <div class="events-section">
-        <h2>All Campus Events</h2>
-        <div class="event-list">
-          <?php foreach (array_slice($all_events, 0, 6) as $event): ?>
-            <div class="event-item">
-              <div>
-                <h3><?php echo htmlspecialchars($event['title']); ?></h3>
-                <p>
-                  <?php echo date('M j, Y g:i A', strtotime($event['event_date'])); ?>
-                  &nbsp;–&nbsp; <?php echo htmlspecialchars($event['location']); ?>
-                  <?php if (!empty($event['first_name']) || !empty($event['last_name'])): ?>
-                    &nbsp;–&nbsp; by <?php echo htmlspecialchars(trim(($event['first_name'] ?? '').' '.($event['last_name'] ?? ''))); ?>
-                  <?php endif; ?>
-                </p>
-              </div>
-            </div>
-          <?php endforeach; ?>
-        </div>
-      </div>
     </div>
   </main>
 
   <footer>
     <p>&copy; 2025 Campus Event Management System | Programming Languages for Web Applications</p>
   </footer>
+  
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="static/js/dashboard.js"></script>
 </body>
 </html>
