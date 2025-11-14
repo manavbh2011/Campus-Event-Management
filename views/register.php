@@ -165,5 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <footer>
     <p>&copy; 2025 Campus Event Management System | Programming Languages for Web Applications</p>
   </footer>
+  
+  <script src="static/js/register.js"></script>
 </body>
 </html>
