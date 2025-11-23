@@ -160,5 +160,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
     <footer>
         <p>&copy; 2025 Campus Event Management System</p>
     </footer>
+    
+    <script src="static/js/search.js"></script>
 </body>
 </html>

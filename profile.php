@@ -195,5 +195,7 @@ $page_title = 'Profile';
     </div>
   </div>
 </main>
+
+<script src="static/js/profile.js"></script>
 </body>
 </html>
