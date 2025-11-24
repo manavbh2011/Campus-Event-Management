@@ -268,16 +268,104 @@ class EventManagementController {
                 break;
 
             case 'events':
-                $stmt = $this->db->query('
-                    SELECT e.id, e.title, e.description, e.event_date, e.location, 
-                           e.capacity, e.category, e.status, e.created_by, e.created_at, e.updated_at,
-                           u.first_name, u.last_name
-                    FROM campus_events e
-                    LEFT JOIN campus_users u ON e.created_by = u.id
-                    ORDER BY e.event_date ASC
-                ');
+                $uid = $this->isLoggedIn() ? (int)$_SESSION['user']['id'] : null;
+
+                if ($uid) {
+                    $stmt = $this->db->prepare('
+                        SELECT e.id,
+                            e.title,
+                            e.description,
+                            e.event_date,
+                            e.location,
+                            e.capacity,
+                            e.category,
+                            e.status,
+                            e.created_by,
+                            e.created_at,
+                            e.updated_at,
+                            u.first_name,
+                            u.last_name,
+                            CASE WHEN e.created_by = :uid THEN TRUE ELSE FALSE END AS is_creator,
+                            CASE WHEN r.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS user_registered
+                        FROM campus_events e
+                        LEFT JOIN campus_users u
+                            ON e.created_by = u.id
+                        LEFT JOIN campus_event_registrations r
+                            ON r.event_id = e.id AND r.user_id = :uid
+                        ORDER BY e.event_date ASC
+                    ');
+                    $stmt->execute([':uid' => $uid]);
+                } else {
+                    $stmt = $this->db->query('
+                        SELECT e.id,
+                            e.title,
+                            e.description,
+                            e.event_date,
+                            e.location,
+                            e.capacity,
+                            e.category,
+                            e.status,
+                            e.created_by,
+                            e.created_at,
+                            e.updated_at,
+                            u.first_name,
+                            u.last_name,
+                            FALSE AS is_creator,
+                            FALSE AS user_registered
+                        FROM campus_events e
+                        LEFT JOIN campus_users u
+                            ON e.created_by = u.id
+                        ORDER BY e.event_date ASC
+                    ');
+                }
+
                 $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 echo json_encode(['success' => true, 'events' => $events]);
+                break;
+            
+            case 'register_event':
+                if (!$this->isLoggedIn()) {
+                    http_response_code(401);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'You must be logged in to register for an event.'
+                    ]);
+                    break;
+                }
+
+                $eventId = isset($_POST['event_id']) ? (int)$_POST['event_id'] : 0;
+                $uid     = (int)$_SESSION['user']['id'];
+
+                if ($eventId <= 0) {
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Invalid event id.'
+                    ]);
+                    break;
+                }
+
+                try {
+                    $stmt = $this->db->prepare('
+                        INSERT INTO campus_event_registrations (event_id, user_id)
+                        VALUES (:event_id, :user_id)
+                        ON CONFLICT (event_id, user_id) DO NOTHING
+                    ');
+                    $stmt->execute([
+                        ':event_id' => $eventId,
+                        ':user_id'  => $uid,
+                    ]);
+
+                    echo json_encode([
+                        'success'  => true,
+                        'event_id' => $eventId,
+                    ]);
+                } catch (PDOException $e) {
+                    http_response_code(500);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Database error while registering.'
+                    ]);
+                }
                 break;
 
             default:
