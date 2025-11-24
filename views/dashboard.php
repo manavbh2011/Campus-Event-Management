@@ -27,7 +27,7 @@
             ?? ($_SESSION['user']['email'] ?? 'User');
           echo htmlspecialchars((string)$safeName, ENT_QUOTES, 'UTF-8');
         ?>!
-    </h1>
+      </h1>
       <p>Here's what's happening with your events today.</p>
 
       <div class="stats-grid">
@@ -42,6 +42,20 @@
         <div class="stat-card">
           <div><?php echo $upcoming_count; ?></div>
           <div>Upcoming</div>
+        </div>
+      </div>
+
+      <div class="events-section">
+        <h2>All Upcoming Events</h2>
+        <div id="all-events" class="event-list">
+          <p>Loading events...</p>
+        </div>
+      </div>
+
+      <div class="events-section">
+        <h2>Events You Registered For</h2>
+        <div id="registered-events" class="event-list">
+          <p>You have not registered for any events yet.</p>
         </div>
       </div>
 
