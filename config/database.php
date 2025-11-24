@@ -1,9 +1,9 @@
 <?php
 class Database {
-    private $host = 'localhost';
-    private $db_name = 'wtm6hs';
-    private $username = 'wtm6hs';
-    private $password = 'xTb7GT1RRuTh';
+    private $host = 'db_2025';//'localhost';
+    private $db_name = 'example';//'wtm6hs';
+    private $username = 'localuser';//'wtm6hs';
+    private $password = 'cs4640LocalUser!';//'xTb7GT1RRuTh';
     private $port = 5432;
     private $conn;
 
