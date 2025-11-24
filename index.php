@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 
 session_set_cookie_params([
   'lifetime' => 0,
-  'path'     => '/wtm6hs/Campus-Event-Management',
+  'path'     => '/Campus-Event-Management',
   'httponly' => true,
   'samesite' => 'Lax'
 ]);
