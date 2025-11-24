@@ -1,9 +1,17 @@
 <?php
-// Setup script to initialize database and create sample data
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once 'config/database.php';
 
-// Initialize database
-initializeDatabase();
+try {
+    initializeDatabase();
+    echo "Database schema initialized successfully.<br>";
+} catch (Throwable $e) {
+    echo "Setup failed: " . htmlspecialchars($e->getMessage());
+    exit;
+}
 
 /* Below is code for filling the tables with sample data (used for development) */ 
 
@@ -74,4 +82,4 @@ initializeDatabase();
 // echo "Faculty: faculty@university.edu / Faculty123!<br><br>\n";
 // echo "<a href='search.php'>Go to Event Search</a> | ";
 // echo "<a href='index.php'>Go to Home</a>\n";
-// ?>
+?>
