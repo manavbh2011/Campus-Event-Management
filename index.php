@@ -1,12 +1,12 @@
 <?php
-/*Link to website: https://cs4640.cs.virginia.edu/wtm6hs/Campus-Event-Management/*/ 
+/*Link to website: https://cs4640.cs.virginia.edu/vus8cb/Campus-Event-Management/*/ 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 session_set_cookie_params([
   'lifetime' => 0,
-  'path'     => '/Campus-Event-Management',
+  'path'     => '/vus8cb/Campus-Event-Management',
   'httponly' => true,
   'samesite' => 'Lax'
 ]);
