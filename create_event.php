@@ -241,7 +241,7 @@ $page_title = 'Create Event';
 
         <div class="actions">
           <button type="submit">Create Event</button>
-          <button type="button" id="btn-preview" aria-describedby="previewHelp">Preview JSON</button>
+          <button type="button" id="btn-preview">Preview JSON</button>
         </div>
       </form>
 
