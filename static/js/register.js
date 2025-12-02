@@ -40,13 +40,13 @@ const handleFormSubmission = () => {
         
         if (!validateName(firstName)) {
             e.preventDefault();
-            showError('First name must be 2+ letters.');
+            showError('First name is invalid.');
             return;
         }
         
         if (!validateName(lastName)) {
             e.preventDefault();
-            showError('Last name must be 2+ letters.');
+            showError('Last name is invalid.');
             return;
         }
         
