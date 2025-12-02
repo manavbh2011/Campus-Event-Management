@@ -100,10 +100,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
   <header class="navbar">
     <div class="logo">EventConnect</div>
-    <nav>
+    <nav class="nav-menu">
       <a href="index.php?action=login" class="nav-btn">Login</a>
       <a href="index.php?action=register" class="nav-btn">Sign Up</a>
     </nav>
+    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+    <div class="mobile-dropdown" id="mobileMenu">
+      <a href="index.php?action=login" class="nav-btn">Login</a>
+      <a href="index.php?action=register" class="nav-btn">Sign Up</a>
+    </div>
   </header>
 
   <main class="main-section">
@@ -166,6 +171,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <p>&copy; 2025 Campus Event Management System | Programming Languages for Web Applications</p>
   </footer>
   
+  <script>
+  function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.toggle('show');
+  }
+  </script>
   <script src="static/js/register.js"></script>
 </body>
 </html>

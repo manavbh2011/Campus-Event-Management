@@ -9,13 +9,21 @@
 <body>
   <header class="navbar">
     <div class="logo">EventConnect</div>
-    <nav>
+    <nav class="nav-menu">
       <a href="index.php?action=dashboard" class="nav-btn">Dashboard</a>
       <a href="search.php" class="nav-btn">Find Events</a>
       <a href="create_event.php" class="nav-btn">Create Event</a>
       <a href="profile.php" class="nav-btn">Profile</a>
       <a href="index.php?action=logout" class="nav-btn">Logout</a>
     </nav>
+    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+    <div class="mobile-dropdown" id="mobileMenu">
+      <a href="index.php?action=dashboard" class="nav-btn">Dashboard</a>
+      <a href="search.php" class="nav-btn">Find Events</a>
+      <a href="create_event.php" class="nav-btn">Create Event</a>
+      <a href="profile.php" class="nav-btn">Profile</a>
+      <a href="index.php?action=logout" class="nav-btn">Logout</a>
+    </div>
   </header>
 
   <main class="dashboard-main">
@@ -66,6 +74,12 @@
     <p>&copy; 2025 Campus Event Management System | Programming Languages for Web Applications</p>
   </footer>
   
+  <script>
+  function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.toggle('show');
+  }
+  </script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="static/js/dashboard.js"></script>
 </body>

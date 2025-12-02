@@ -132,13 +132,21 @@ $page_title = 'Profile';
 <body>
 <header class="navbar">
   <div class="logo">EventConnect</div>
-  <nav>
+  <nav class="nav-menu">
     <a href="index.php?action=dashboard" class="nav-btn">Dashboard</a>
     <a href="search.php" class="nav-btn">Find Events</a>
     <a href="create_event.php" class="nav-btn">Create Event</a>
     <a href="profile.php" class="nav-btn">Profile</a>
     <a href="index.php?action=logout" class="nav-btn">Logout</a>
   </nav>
+  <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+  <div class="mobile-dropdown" id="mobileMenu">
+    <a href="index.php?action=dashboard" class="nav-btn">Dashboard</a>
+    <a href="search.php" class="nav-btn">Find Events</a>
+    <a href="create_event.php" class="nav-btn">Create Event</a>
+    <a href="profile.php" class="nav-btn">Profile</a>
+    <a href="index.php?action=logout" class="nav-btn">Logout</a>
+  </div>
 </header>
 
 <main class="profile-main" role="main">
@@ -196,6 +204,12 @@ $page_title = 'Profile';
   </div>
 </main>
 
+<script>
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  menu.classList.toggle('show');
+}
+</script>
 <script src="static/js/profile.js"></script>
 </body>
 </html>

@@ -21,11 +21,17 @@ body {
   background: #333;
   padding: 14px 40px;
   color: white;
+  position: relative;
 }
 
 .logo {
   font-size: 1.4em;
   font-weight: bold;
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
 }
 
 .nav-btn {
@@ -39,7 +45,34 @@ body {
 }
 
 .nav-btn:hover {
-  background: #e0e0e0;
+  background: #2563eb;
+}
+
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5em;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.mobile-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #333;
+  flex-direction: column;
+  padding: 10px 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.mobile-dropdown .nav-btn {
+  margin: 5px 0;
+  text-align: center;
 }
 
 .main-section {
@@ -168,7 +201,19 @@ footer {
   }
 
   .navbar {
-    flex-direction: column;
+    padding: 14px 20px;
+  }
+
+  .nav-menu {
+    display: none;
+  }
+
+  .mobile-menu-toggle {
+    display: block;
+  }
+
+  .mobile-dropdown.show {
+    display: flex;
   }
 }
 
