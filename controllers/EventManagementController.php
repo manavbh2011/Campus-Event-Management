@@ -286,12 +286,19 @@ class EventManagementController {
                             u.first_name,
                             u.last_name,
                             CASE WHEN e.created_by = :uid THEN TRUE ELSE FALSE END AS is_creator,
-                            CASE WHEN r.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS user_registered
+                            CASE WHEN r.user_id IS NOT NULL THEN TRUE ELSE FALSE END AS user_registered,
+                            COALESCE(reg_count.count, 0) AS registration_count
                         FROM campus_events e
                         LEFT JOIN campus_users u
                             ON e.created_by = u.id
                         LEFT JOIN campus_event_registrations r
                             ON r.event_id = e.id AND r.user_id = :uid
+                        LEFT JOIN (
+                            SELECT event_id, COUNT(*) as count
+                            FROM campus_event_registrations
+                            GROUP BY event_id
+                        ) reg_count ON e.id = reg_count.event_id
+                        WHERE e.event_date > CURRENT_TIMESTAMP
                         ORDER BY e.event_date ASC
                     ');
                     $stmt->execute([':uid' => $uid]);
@@ -311,10 +318,17 @@ class EventManagementController {
                             u.first_name,
                             u.last_name,
                             FALSE AS is_creator,
-                            FALSE AS user_registered
+                            FALSE AS user_registered,
+                            COALESCE(reg_count.count, 0) AS registration_count
                         FROM campus_events e
                         LEFT JOIN campus_users u
                             ON e.created_by = u.id
+                        LEFT JOIN (
+                            SELECT event_id, COUNT(*) as count
+                            FROM campus_event_registrations
+                            GROUP BY event_id
+                        ) reg_count ON e.id = reg_count.event_id
+                        WHERE e.event_date > CURRENT_TIMESTAMP
                         ORDER BY e.event_date ASC
                     ');
                 }
@@ -345,6 +359,33 @@ class EventManagementController {
                 }
 
                 try {
+                    // Check if event is at capacity
+                    $capacityStmt = $this->db->prepare('
+                        SELECT e.capacity, COALESCE(COUNT(r.user_id), 0) as current_registrations
+                        FROM campus_events e
+                        LEFT JOIN campus_event_registrations r ON e.id = r.event_id
+                        WHERE e.id = :event_id
+                        GROUP BY e.id, e.capacity
+                    ');
+                    $capacityStmt->execute([':event_id' => $eventId]);
+                    $eventInfo = $capacityStmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    if (!$eventInfo) {
+                        echo json_encode([
+                            'success' => false,
+                            'message' => 'Event not found.'
+                        ]);
+                        break;
+                    }
+                    
+                    if ($eventInfo['current_registrations'] >= $eventInfo['capacity']) {
+                        echo json_encode([
+                            'success' => false,
+                            'message' => 'Event is at full capacity.'
+                        ]);
+                        break;
+                    }
+
                     $stmt = $this->db->prepare('
                         INSERT INTO campus_event_registrations (event_id, user_id)
                         VALUES (:event_id, :user_id)
@@ -364,6 +405,106 @@ class EventManagementController {
                     echo json_encode([
                         'success' => false,
                         'message' => 'Database error while registering.'
+                    ]);
+                }
+                break;
+
+            case 'unregister_event':
+                if (!$this->isLoggedIn()) {
+                    http_response_code(401);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'You must be logged in to unregister from an event.'
+                    ]);
+                    break;
+                }
+
+                $eventId = isset($_POST['event_id']) ? (int)$_POST['event_id'] : 0;
+                $uid     = (int)$_SESSION['user']['id'];
+
+                if ($eventId <= 0) {
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Invalid event id.'
+                    ]);
+                    break;
+                }
+
+                try {
+                    $stmt = $this->db->prepare('
+                        DELETE FROM campus_event_registrations 
+                        WHERE event_id = :event_id AND user_id = :user_id
+                    ');
+                    $stmt->execute([
+                        ':event_id' => $eventId,
+                        ':user_id'  => $uid,
+                    ]);
+
+                    echo json_encode([
+                        'success'  => true,
+                        'event_id' => $eventId,
+                    ]);
+                } catch (PDOException $e) {
+                    http_response_code(500);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Database error while unregistering.'
+                    ]);
+                }
+                break;
+
+            case 'delete_event':
+                if (!$this->isLoggedIn()) {
+                    http_response_code(401);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'You must be logged in to delete an event.'
+                    ]);
+                    break;
+                }
+
+                $eventId = isset($_POST['event_id']) ? (int)$_POST['event_id'] : 0;
+                $uid     = (int)$_SESSION['user']['id'];
+
+                if ($eventId <= 0) {
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Invalid event id.'
+                    ]);
+                    break;
+                }
+
+                try {
+                    // Check if user owns the event
+                    $ownerStmt = $this->db->prepare('SELECT created_by FROM campus_events WHERE id = :event_id');
+                    $ownerStmt->execute([':event_id' => $eventId]);
+                    $event = $ownerStmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    if (!$event || (int)$event['created_by'] !== $uid) {
+                        echo json_encode([
+                            'success' => false,
+                            'message' => 'You can only delete events you created.'
+                        ]);
+                        break;
+                    }
+
+                    // Delete registrations first
+                    $this->db->prepare('DELETE FROM campus_event_registrations WHERE event_id = :event_id')
+                             ->execute([':event_id' => $eventId]);
+                    
+                    // Delete the event
+                    $this->db->prepare('DELETE FROM campus_events WHERE id = :event_id')
+                             ->execute([':event_id' => $eventId]);
+
+                    echo json_encode([
+                        'success'  => true,
+                        'event_id' => $eventId,
+                    ]);
+                } catch (PDOException $e) {
+                    http_response_code(500);
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Database error while deleting event.'
                     ]);
                 }
                 break;

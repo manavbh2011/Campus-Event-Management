@@ -14,7 +14,8 @@ class Event {
         first_name = '',
         last_name = '',
         user_registered = false,
-        is_creator = false
+        is_creator = false,
+        registration_count = 0
     ) {
         this.id = id;
         this.title = title;
@@ -30,6 +31,7 @@ class Event {
         this.organizer = `${first_name} ${last_name}`.trim();
         this.user_registered = Boolean(user_registered);
         this.is_creator = Boolean(is_creator);
+        this.registration_count = parseInt(registration_count) || 0;
     }
 }
 
@@ -63,7 +65,8 @@ const loadEventsFromAPI = () => {
                         eventData.first_name,
                         eventData.last_name,
                         eventData.user_registered,
-                        eventData.is_creator
+                        eventData.is_creator,
+                        eventData.registration_count
                     )
                 );
 
@@ -96,10 +99,13 @@ const renderAllEvents = (events) => {
                 : 'General';
 
         let actionHtml = '';
+        const isFull = event.registration_count >= event.capacity;
         if (event.is_creator) {
-            actionHtml = `<span class="badge-owner">You created this event</span>`;
+            actionHtml = `<button class="btn-delete" data-event-id="${event.id}">Delete Event</button>`;
         } else if (event.user_registered) {
             actionHtml = `<span class="badge-registered">Registered</span>`;
+        } else if (isFull) {
+            actionHtml = `<span class="badge-full">Event Full</span>`;
         } else {
             actionHtml = `<button class="btn-register" data-event-id="${event.id}">Register</button>`;
         }
@@ -109,7 +115,7 @@ const renderAllEvents = (events) => {
                 <div>
                     <h3>${event.title}</h3>
                     <p>${new Date(event.event_date).toLocaleDateString()} - ${event.location}</p>
-                    <p><strong>Category:</strong> ${titleCaseCategory} | <strong>Capacity:</strong> ${event.capacity}</p>
+                    <p><strong>Category:</strong> ${titleCaseCategory} | <strong>Capacity:</strong> ${event.registration_count}/${event.capacity}</p>
                     ${event.organizer ? `<small>by ${event.organizer}</small>` : ''}
                     <div class="event-actions">
                         ${actionHtml}
@@ -140,6 +146,9 @@ const renderRegisteredEvents = (events) => {
                     <h3>${event.title}</h3>
                     <p>${new Date(event.event_date).toLocaleDateString()} - ${event.location}</p>
                     <p><strong>Status:</strong> Registered</p>
+                    <div class="event-actions">
+                        <button class="btn-unregister" data-event-id="${event.id}">Unregister</button>
+                    </div>
                 </div>
             </div>
         `;
@@ -165,7 +174,32 @@ const loadDashboardEvents = async () => {
     }
 };
 
-const wireDashboardRegistration = () => {
+const wireDashboardFunctionalities = () => {
+    $(document).on('click', '.btn-delete', function (e) {
+        e.preventDefault();
+        const button = $(this);
+        const eventId = button.data('event-id');
+
+        if (confirm('Are you sure you want to delete this event? This action cannot be undone.')) {
+            $.ajax({
+                url: 'index.php?action=api&endpoint=delete_event',
+                type: 'POST',
+                dataType: 'json',
+                data: { event_id: eventId },
+                success: function (data) {
+                    if (data && data.success) {
+                        loadDashboardEvents();
+                    } else {
+                        alert((data && data.message) || 'Unable to delete this event.');
+                    }
+                },
+                error: function () {
+                    alert('Error contacting server.');
+                }
+            });
+        }
+    });
+
     $(document).on('click', '.btn-register', function (e) {
         e.preventDefault();
         const button = $(this);
@@ -188,10 +222,35 @@ const wireDashboardRegistration = () => {
             }
         });
     });
+
+    $(document).on('click', '.btn-unregister', function (e) {
+        e.preventDefault();
+        const button = $(this);
+        const eventId = button.data('event-id');
+
+        if (confirm('Are you sure you want to unregister from this event?')) {
+            $.ajax({
+                url: 'index.php?action=api&endpoint=unregister_event',
+                type: 'POST',
+                dataType: 'json',
+                data: { event_id: eventId },
+                success: function (data) {
+                    if (data && data.success) {
+                        loadDashboardEvents();
+                    } else {
+                        alert((data && data.message) || 'Unable to unregister from this event.');
+                    }
+                },
+                error: function () {
+                    alert('Error contacting server.');
+                }
+            });
+        }
+    });
 };
 
 $(document).ready(async function () {
-    wireDashboardRegistration();
+    wireDashboardFunctionalities();
     await loadDashboardEvents();
 
     $(document).on('mouseenter', '.event-item', function () {
