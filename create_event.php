@@ -258,6 +258,10 @@ $page_title = 'Create Event';
   </div>
 </main>
 
+<footer>
+    <p>&copy; 2025 EventConnect | Programming Languages for Web Applications</p>
+</footer>
+
 <script>
 function toggleMobileMenu() {
   const menu = document.getElementById('mobileMenu');

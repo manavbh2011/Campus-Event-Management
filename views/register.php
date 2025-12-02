@@ -168,7 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </main>
 
   <footer>
-    <p>&copy; 2025 Campus Event Management System | Programming Languages for Web Applications</p>
+    <p>&copy; 2025 EventConnect | Programming Languages for Web Applications</p>
   </footer>
   
   <script>

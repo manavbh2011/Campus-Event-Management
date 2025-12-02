@@ -218,7 +218,7 @@ $isLoggedIn = isset($_SESSION['user_id']);
     </main>
 
     <footer>
-        <p>&copy; 2025 Campus Event Management System</p>
+        <p>&copy; 2025 EventConnect | Programming Languages for Web Applications</p>
     </footer>
 
     <script>
